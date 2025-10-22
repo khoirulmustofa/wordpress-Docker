@@ -1,0 +1,29 @@
+services:
+  wordpress:
+    image: wordpress:php8.3-apache
+    container_name: wp_lpmi
+    ports:
+      - "6000:80"
+    volumes:
+      - ./wordpress:/var/www/html 
+      - ./php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+    networks:
+      - nfbs_dev
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Jakarta
+      WORDPRESS_DB_HOST: mariadb_server:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wpsecret@123
+      WORDPRESS_TABLE_PREFIX: wp_
+      AUTO_CONFIG: "true"
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "curl -fsS http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    mem_limit: "2g"
+networks:
+  nfbs_dev:
+    external: true
